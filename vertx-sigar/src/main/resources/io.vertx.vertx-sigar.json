@@ -1,0 +1,9 @@
+{
+  "main": "io.vertx.ext.sigar.SigarServiceVerticle",
+  "options": {
+    "worker": false,
+    "config": {
+      "address": "vertx.sigar"
+    }
+  }
+}

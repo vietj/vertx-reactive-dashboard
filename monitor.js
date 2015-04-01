@@ -3,11 +3,17 @@ vertx.deployVerticle("maven:io.vertx:vertx-sigar:1.0-SNAPSHOT::io.vertx.vertx-si
 
 var service = metricsService.create(vertx);
 
+var nodeId = java.util.UUID.randomUUID().toString();
+
 vertx.eventBus().consumer("vertx.sigar", function(msg) {
-  var abc = service.getMetricsSnapshot(vertx.eventBus());
-  console.log(abc);
+  var snapshot = service.getMetricsSnapshot(vertx.eventBus());
   vertx.eventBus().publish("metrics", {
-    "eventBus" : abc,
+    "node": nodeId,
+    "eventBus" : snapshot,
     "processes" : msg.body()
   });
 });
+
+console.log("Started " + nodeId);
+
+

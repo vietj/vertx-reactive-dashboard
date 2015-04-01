@@ -15,5 +15,5 @@ def httpServer = vertx.createHttpServer();
 httpServer.requestHandler(router.&accept).listen(8080);
     
 vertx.eventBus().consumer("metrics") { msg -> 
-  System.out.println("got metrics ${msg}");
+  System.out.println("got metrics from ${msg.body().node}");
 };

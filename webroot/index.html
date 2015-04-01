@@ -36,29 +36,12 @@
       }
     });
 
-    $('#container').highcharts({
+    var chart = new Highcharts.Chart({
       chart: {
+        renderTo: "container",
         type: 'spline',
         animation: Highcharts.svg, // don't animate in old IE
-        marginRight: 10,
-        events: {
-          load: function () {
-            var that = this;
-            var sentSeries = this.series[0];
-            var deliveredSeries = this.series[1];
-            var eb = new vertx.EventBus("http://localhost:8080/eventbus");
-            eb.onopen = function() {
-              eb.registerHandler("metrics", function(metrics) {
-                var x = (new Date()).getTime(); // current time
-                var sent = metrics["eventBus"]["messages.received"];
-                if (sent != null) {
-                  sentSeries.addPoint([x, sent.throughput], false, true);
-                }
-                that.redraw();
-              });
-            };
-          }
-        }
+        marginRight: 10
       },
       title: {
         text: 'Sent messages throughput'
@@ -83,23 +66,48 @@
       exporting: {
         enabled: false
       },
-      series: [{
-        name: 'sent',
-        data: (function () {
-          var data = [],
-              time = (new Date()).getTime(),
-              i;
-
-          for (i = -19; i <= 0; i += 1) {
-            data.push({
-              x: time + i * 1000,
-              y: 0
-            });
-          }
-          return data;
-        }())
-      }]
+      series: []
     });
+
+    console.log(chart);
+
+    var eb = new vertx.EventBus("http://localhost:8080/eventbus");
+    eb.onopen = function() {
+      var series = {};
+      eb.registerHandler("dashboard", function(dashboard) {
+        var x = (new Date()).getTime(); // current time
+
+        //
+        for (var j = 0; j < dashboard.length; j++) {
+          var metrics = dashboard[j];
+          var id = metrics.id;
+          var serie = series[id];
+          if (serie == null) {
+            console.log(metrics);
+            console.log("creating serie " + id);
+            var data = [], time = (new Date()).getTime(),i ;
+            for (i = -19; i <= 0; i += 1) {
+              data.push({
+                x: time + i * 1000,
+                y: 0
+              });
+            }
+            serie = chart.addSeries({
+              name: "whatever",
+              data: data
+            });
+            series[id] = serie;
+          }
+          var y = metrics.jvm.process.percent;
+          serie.addPoint([x, y], false, true);
+        }
+
+        // Remove absent metrics later
+
+        chart.redraw();
+      });
+    };
+
   </script>
 
 

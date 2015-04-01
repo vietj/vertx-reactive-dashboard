@@ -4,6 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import org.hyperic.sigar.ProcCpu;
+import org.hyperic.sigar.ProcMem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
@@ -24,7 +25,8 @@ public class SigarServiceVerticle extends AbstractVerticle {
       try {
         long pid = sigar.getPid();
         ProcCpu cpu = sigar.getProcCpu(pid);
-        metrics.put("process", toJson(pid, cpu));
+        ProcMem mem = sigar.getProcMem(pid);
+        metrics.put("process", toJson(pid, cpu, mem));
       } catch (SigarException e) {
         e.printStackTrace();
       }
@@ -43,14 +45,18 @@ public class SigarServiceVerticle extends AbstractVerticle {
     super.stop(stopFuture);
   }
 
-  private JsonObject toJson(long id, ProcCpu cpu) {
+  private JsonObject toJson(long id, ProcCpu cpu, ProcMem mem) {
     return new JsonObject().
         put("id", id).
-        put("total", cpu.getTotal()).
-        put("sys", cpu.getSys()).
-        put("startTime", cpu.getStartTime()).
-        put("lastTime", cpu.getLastTime()).
-        put("percent", cpu.getPercent()).
-        put("user", cpu.getUser());
+        put("cpu", new JsonObject().
+            put("total", cpu.getTotal()).
+            put("sys", cpu.getSys()).
+            put("startTime", cpu.getStartTime()).
+            put("lastTime", cpu.getLastTime()).
+            put("percent", cpu.getPercent()).
+            put("user", cpu.getUser())).
+        put("mem", new JsonObject().
+            put("size", mem.getSize())
+        );
   }
 }

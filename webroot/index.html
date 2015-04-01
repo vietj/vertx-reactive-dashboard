@@ -26,8 +26,6 @@
   <div class="news">Latest news: </div><br>
   <div id="status" class="news"></div>
 
-  <div id="container" style="height: 150px; min-width: 310px"></div>
-
   <script>
 
     Highcharts.setOptions({
@@ -36,75 +34,92 @@
       }
     });
 
-    var chart = new Highcharts.Chart({
-      chart: {
-        renderTo: "container",
-        type: 'spline',
-        animation: Highcharts.svg, // don't animate in old IE
-        marginRight: 10
-      },
-      title: {
-        text: 'Sent messages throughput'
-      },
-      xAxis: {
-        type: 'datetime',
-        tickPixelInterval: 150
-      },
-      yAxis: {
-        title: {
-          text: 'Value'
-        },
-        plotLines: [{
-          value: 0,
-          width: 1,
-          color: '#808080'
-        }]
-      },
-      legend: {
-        enabled: false
-      },
-      exporting: {
-        enabled: false
-      },
-      series: []
-    });
-
-    console.log(chart);
+    var charts = {};
+    function getChart(metric) {
+      var chart = charts[metric];
+      if (chart == null) {
+        $("body").append('<div id="' + metric + '" style="height: 150px; min-width: 310px"></div>');
+        chart = {
+          widget: new Highcharts.Chart({
+            chart: {
+              renderTo: metric,
+              type: 'spline',
+              animation: Highcharts.svg, // don't animate in old IE
+              marginRight: 10
+            },
+            title: {
+              text: metric
+            },
+            xAxis: {
+              type: 'datetime',
+              tickPixelInterval: 150
+            },
+            yAxis: {
+              title: {
+                text: 'Value'
+              },
+              plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+              }]
+            },
+            legend: {
+              enabled: false
+            },
+            exporting: {
+              enabled: false
+            },
+            series: []
+          }),
+          series: {}
+        };
+        charts[metric] = chart;
+      }
+      return chart;
+    }
 
     var eb = new vertx.EventBus("http://localhost:8080/eventbus");
     eb.onopen = function() {
-      var series = {};
       eb.registerHandler("dashboard", function(dashboard) {
         var x = (new Date()).getTime(); // current time
 
-        //
-        for (var j = 0; j < dashboard.length; j++) {
-          var metrics = dashboard[j];
-          var id = metrics.id;
-          var serie = series[id];
-          if (serie == null) {
-            console.log(metrics);
-            console.log("creating serie " + id);
-            var data = [], time = (new Date()).getTime(),i ;
-            for (i = -19; i <= 0; i += 1) {
-              data.push({
-                x: time + i * 1000,
-                y: 0
-              });
+        for (var id in dashboard) {
+          if (dashboard.hasOwnProperty(id)) {
+            var metrics = dashboard[id];
+            for (var metric in metrics) {
+              if (metrics.hasOwnProperty(metric)) {
+                var chart = getChart(metric);
+                var series = chart.series;
+                var serie = series[id];
+                if (serie == null) {
+                  console.log("creating serie " + id);
+                  var data = [], time = (new Date()).getTime(),i ;
+                  for (i = -19; i <= 0; i += 1) {
+                    data.push({
+                      x: time + i * 1000,
+                      y: 0
+                    });
+                  }
+                  serie = chart.widget.addSeries({
+                    name: "whatever",
+                    data: data
+                  });
+                  series[id] = serie;
+                }
+                var y = metrics[metric];
+                serie.addPoint([x, y], false, true);
+              }
             }
-            serie = chart.addSeries({
-              name: "whatever",
-              data: data
-            });
-            series[id] = serie;
           }
-          var y = metrics.jvm.process.percent;
-          serie.addPoint([x, y], false, true);
         }
 
         // Remove absent metrics later
-
-        chart.redraw();
+        for (var key in charts) {
+          if (charts.hasOwnProperty(key)) {
+            charts[key].widget.redraw();
+          }
+        }
       });
     };
 

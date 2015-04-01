@@ -18,7 +18,11 @@ def dashboard = [:]
     
 vertx.eventBus().consumer("metrics") { msg ->
   def metrics = msg.body();
-  dashboard[metrics.id] = metrics;
+  dashboard[metrics.id] = [
+    CPU: metrics.jvm.process.cpu.percent,
+    mem: metrics.jvm.process.mem.size,
+    published: metrics.vertx["vertx.eventbus.messages.published"].throughput
+  ];
 };
 
 vertx.setPeriodic(1000) {

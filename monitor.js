@@ -6,10 +6,10 @@ var service = metricsService.create(vertx);
 var id = java.util.UUID.randomUUID().toString();
 
 vertx.eventBus().localConsumer("vertx.sigar", function(msg) {
-  var snapshot = service.getMetricsSnapshot(vertx.eventBus());
+  var snapshot = service.getMetricsSnapshot(vertx);
   vertx.eventBus().publish("metrics", {
     "id": id,
-    "eventBus" : snapshot,
+    "vertx" : snapshot,
     "jvm" : msg.body()
   });
 });

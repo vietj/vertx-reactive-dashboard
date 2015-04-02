@@ -85,6 +85,7 @@
         var x = (new Date()).getTime(); // current time
 
         for (var id in dashboard) {
+          console.log(id);
           if (dashboard.hasOwnProperty(id)) {
             var metrics = dashboard[id];
             for (var metric in metrics) {

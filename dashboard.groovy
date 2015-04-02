@@ -1,7 +1,7 @@
 import io.vertx.groovy.ext.apex.Router;
 import io.vertx.groovy.ext.apex.handler.sockjs.SockJSHandler;
 import io.vertx.groovy.ext.apex.handler.StaticHandler;
-
+import java.util.concurrent.TimeUnit;
 
 def router = Router.router(vertx)
 
@@ -26,5 +26,21 @@ vertx.eventBus().consumer("metrics") { msg ->
 };
 
 vertx.setPeriodic(1000) {
-  vertx.eventBus().publish("dashboard", dashboard.values() as List)
+  vertx.eventBus().publish("dashboard", dashboard)
 }
+
+/*
+// RxGroovy version
+def observable = vertx.eventBus().consumer("metrics").bodyStream().toObservable();
+observable.
+    buffer(1, TimeUnit.SECONDS).
+    map({ dashboard -> dashboard.collectEntries { metrics ->  [metrics.id, [
+        CPU: metrics.jvm.process.cpu.percent,
+        mem: metrics.jvm.process.mem.size,
+        published: metrics.vertx["vertx.eventbus.messages.published"].throughput
+    ]] }
+    }).
+    subscribe() { dashboard ->
+      vertx.eventBus().publish("dashboard", dashboard)
+    }
+*/

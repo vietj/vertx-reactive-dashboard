@@ -38,3 +38,13 @@ vertx run dashboard.groovy -cluster -cluster-host 192.168.0.106
 
 It subscribes to the `metrics` address and aggregates the metrics in a dashboard sent to the client via
 the event bus bridge. The client gets the metrics with a nice dynamic dashboard.
+
+## Fatjaring monitor.js
+
+The _service_ Maven project creates a fatjar wrapping `monitor.js` and its dependencies, run it with:
+
+```
+java -Dvertx.metrics.options.enabled=true -jar target/my-service-1.0-SNAPSHOT-fatjar.jar
+```
+
+Note: it cannot be run with custom cluster configuration at the moment

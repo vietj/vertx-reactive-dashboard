@@ -20,8 +20,8 @@ vertx.eventBus().consumer("metrics") { msg ->
   def metrics = msg.body();
   dashboard[metrics.id] = [
     CPU: metrics.jvm.process.cpu.percent,
-    mem: metrics.jvm.process.mem.size,
-    published: metrics.vertx["vertx.eventbus.messages.published"].throughput
+    Mem: metrics.jvm.process.mem.size,
+    Published: metrics.vertx["vertx.eventbus.messages.published"].oneSecondRate
   ];
 };
 

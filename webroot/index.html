@@ -93,13 +93,14 @@
                 var chart = getChart(metric);
                 var series = chart.series;
                 var serie = series[id];
+                var y = metrics[metric];
                 if (serie == null) {
                   console.log("creating serie " + id);
                   var data = [], time = (new Date()).getTime(),i ;
                   for (i = -19; i <= 0; i += 1) {
                     data.push({
                       x: time + i * 1000,
-                      y: 0
+                      y: y
                     });
                   }
                   serie = chart.widget.addSeries({
@@ -108,7 +109,6 @@
                   });
                   series[id] = serie;
                 }
-                var y = metrics[metric];
                 serie.addPoint([x, y], false, true);
               }
             }

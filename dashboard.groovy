@@ -19,9 +19,9 @@ def dashboard = [:]
 vertx.eventBus().consumer("metrics") { msg ->
   def metrics = msg.body();
   dashboard[metrics.id] = [
-    CPU: metrics.jvm.process.cpu.percent,
-    Mem: metrics.jvm.process.mem.size,
-    Published: metrics.vertx["vertx.eventbus.messages.published"].oneSecondRate
+    CPU: metrics.jvm.cpu,
+    Mem: metrics.jvm.mem
+    // Published: metrics.vertx["vertx.eventbus.messages.published"].oneSecondRate
   ];
 };
 

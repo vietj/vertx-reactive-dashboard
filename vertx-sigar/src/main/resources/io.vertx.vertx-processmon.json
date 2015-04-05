@@ -1,0 +1,9 @@
+{
+  "main": "io.vertx.ext.processmon.ProcessmonVerticle",
+  "options": {
+    "worker": false,
+    "config": {
+      "address": "vertx.processmon"
+    }
+  }
+}

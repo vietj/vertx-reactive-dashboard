@@ -10,9 +10,8 @@
     <version>5</version>
   </parent>
 
-  <artifactId>vertx-sigar</artifactId>
+  <artifactId>vertx-processmon</artifactId>
   <version>1.0-SNAPSHOT</version>
-
 
   <dependencies>
     <dependency>
@@ -20,24 +19,6 @@
       <artifactId>vertx-core</artifactId>
       <version>3.0.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>com.higherfrequencytrading</groupId>
-      <artifactId>affinity</artifactId>
-      <version>1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-service-factory</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>sigar</groupId>
-      <artifactId>sigar</artifactId>
-      <version>1.6.5</version>
-      <scope>system</scope>
-      <systemPath>/Users/julien/java/devoxx-demo/hyperic-sigar-1.6.5/sigar-bin/lib/sigar.jar</systemPath>
-    </dependency>
   </dependencies>
-
 
 </project>

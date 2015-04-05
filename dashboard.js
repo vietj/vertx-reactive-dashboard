@@ -16,16 +16,16 @@ router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options).
 router.route().handler(StaticHandler.create().handle);
 vertx.createHttpServer().requestHandler(router.accept).listen(8080);
 
-vertx.deployVerticle("maven:io.vertx:vertx-sigar:1.0-SNAPSHOT::io.vertx.vertx-sigar");
+vertx.deployVerticle("maven:io.vertx:vertx-processmon:1.0-SNAPSHOT::io.vertx.vertx-processmon");
 
 var id = java.util.UUID.randomUUID().toString();
 
-vertx.eventBus().localConsumer("vertx.sigar", function(msg) {
+vertx.eventBus().localConsumer("vertx.processmon", function(msg) {
   var metrics = msg.body();
   var dashboard = {};
   dashboard[id] = {
-    CPU: metrics.process.cpu.percent,
-    Mem: metrics.process.mem.size
+    CPU: metrics.cpu,
+    Mem: metrics.mem
   };
   vertx.eventBus().publish("dashboard", dashboard);
 });

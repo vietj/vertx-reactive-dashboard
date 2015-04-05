@@ -1,4 +1,4 @@
-package io.vertx.ext.sigar;
+package io.vertx.ext.processmon;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -12,11 +12,11 @@ public class Main {
   public static void main(String[] args) {
     Vertx vertx = Vertx.vertx();
     vertx.deployVerticle(
-        new SigarServiceVerticle(),
-        new DeploymentOptions().setConfig(new JsonObject().put("address", "vertx.sigar")),
+        new ProcessmonVerticle(),
+        new DeploymentOptions().setConfig(new JsonObject().put("address", "vertx.processmon")),
         deployment -> {
       if (deployment.succeeded()) {
-        vertx.eventBus().<JsonObject>consumer("vertx.sigar", msg -> {
+        vertx.eventBus().<JsonObject>consumer("vertx.processmon", msg -> {
           System.out.println(msg.body());
         });
       } else {

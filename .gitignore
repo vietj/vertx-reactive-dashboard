@@ -1,3 +1,5 @@
+.gradle
+build
 .extract
 .DS_Store
 target

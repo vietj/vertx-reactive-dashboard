@@ -33,7 +33,3 @@ run {
 }
 
 mainClassName = "io.vertx.ext.sigar.Main"
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '2.3'
-}

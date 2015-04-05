@@ -16,11 +16,11 @@ router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options).
 router.route().handler(StaticHandler.create().handle);
 vertx.createHttpServer().requestHandler(router.accept).listen(8080);
 
-vertx.deployVerticle("maven:io.vertx:vertx-processmon:1.0-SNAPSHOT::io.vertx.vertx-processmon");
+vertx.deployVerticle("maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon");
 
 var id = java.util.UUID.randomUUID().toString();
 
-vertx.eventBus().localConsumer("vertx.processmon", function(msg) {
+vertx.eventBus().localConsumer("processmon", function(msg) {
   var metrics = msg.body();
   var dashboard = {};
   dashboard[id] = {

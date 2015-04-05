@@ -10,7 +10,7 @@
     <version>5</version>
   </parent>
 
-  <artifactId>vertx-processmon</artifactId>
+  <artifactId>processmon</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <dependencies>

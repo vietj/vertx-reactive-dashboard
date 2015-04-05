@@ -3,7 +3,7 @@
   "options": {
     "worker": false,
     "config": {
-      "address": "vertx.processmon"
+      "address": "processmon"
     }
   }
 }

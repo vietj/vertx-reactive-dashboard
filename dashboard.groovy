@@ -20,7 +20,7 @@ vertx.eventBus().consumer("metrics") { msg ->
   def metrics = msg.body();
   dashboard[metrics.id] = [
     CPU: metrics.jvm.cpu,
-    Mem: metrics.jvm.mem
+    Mem: metrics.jvm.mem,
     // Published: metrics.vertx["vertx.eventbus.messages.published"].oneSecondRate
   ];
 };
@@ -35,9 +35,9 @@ def observable = vertx.eventBus().consumer("metrics").bodyStream().toObservable(
 observable.
     buffer(1, TimeUnit.SECONDS).
     map({ dashboard -> dashboard.collectEntries { metrics ->  [metrics.id, [
-        CPU: metrics.jvm.process.cpu.percent,
-        mem: metrics.jvm.process.mem.size,
-        published: metrics.vertx["vertx.eventbus.messages.published"].throughput
+        CPU: metrics.jvm.cpu,
+        mem: metrics.jvm.mem,
+        // published: metrics.vertx["vertx.eventbus.messages.published"].throughput
     ]] }
     }).
     subscribe() { dashboard ->

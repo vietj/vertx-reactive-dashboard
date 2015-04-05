@@ -1,0 +1,39 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'idea'
+	id 'application'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+configurations {
+	provided
+}
+
+sourceSets {
+	main {
+		compileClasspath += configurations.provided
+	}
+}
+
+dependencies {
+	compile "io.vertx:vertx-core:3.0.0-SNAPSHOT"
+    compile "com.higherfrequencytrading:affinity:1.7"
+    compile "io.vertx:vertx-service-factory:3.0.0-SNAPSHOT"
+	provided files('/Users/julien/java/devoxx-demo/hyperic-sigar-1.6.5/sigar-bin/lib/sigar.jar')
+}
+
+run {
+	classpath += configurations.provided
+}
+
+mainClassName = "io.vertx.ext.sigar.Main"
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.3'
+}

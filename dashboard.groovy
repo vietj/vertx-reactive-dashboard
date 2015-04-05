@@ -18,11 +18,7 @@ def dashboard = [:]
     
 vertx.eventBus().consumer("metrics") { msg ->
   def metrics = msg.body();
-  dashboard[metrics.id] = [
-    CPU: metrics.jvm.cpu,
-    Mem: metrics.jvm.mem,
-    // Published: metrics.vertx["vertx.eventbus.messages.published"].oneSecondRate
-  ];
+  dashboard << metrics;
 };
 
 vertx.setPeriodic(1000) {
@@ -34,11 +30,7 @@ vertx.setPeriodic(1000) {
 def observable = vertx.eventBus().consumer("metrics").bodyStream().toObservable();
 observable.
     buffer(1, TimeUnit.SECONDS).
-    map({ dashboard -> dashboard.collectEntries { metrics ->  [metrics.id, [
-        CPU: metrics.jvm.cpu,
-        mem: metrics.jvm.mem,
-        // published: metrics.vertx["vertx.eventbus.messages.published"].throughput
-    ]] }
+    map({ dashboard -> dashboard.inject([:]) { result, i -> result << i }
     }).
     subscribe() { dashboard ->
       vertx.eventBus().publish("dashboard", dashboard)

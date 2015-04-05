@@ -3,17 +3,15 @@ vertx.deployVerticle("maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmo
 
 var service = metricsService.create(vertx);
 
-var id = java.util.UUID.randomUUID().toString();
-
 vertx.eventBus().localConsumer("processmon", function(msg) {
   var snapshot = service.getMetricsSnapshot(vertx);
-  vertx.eventBus().publish("metrics", {
-    "id": id,
-    "vertx" : snapshot,
-    "jvm" : msg.body()
-  });
+  var process = msg.body();
+  var metrics = {};
+  metrics[process.pid] = {
+    CPU: process.cpu,
+    Mem: process.mem
+  };
+  vertx.eventBus().publish("metrics", metrics);
 });
-
-console.log("Started " + id);
 
 

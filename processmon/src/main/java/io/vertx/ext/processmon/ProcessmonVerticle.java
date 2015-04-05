@@ -12,7 +12,7 @@ import java.util.UUID;
  */
 public class ProcessmonVerticle extends AbstractVerticle {
 
-  long id;
+  long timer;
 
   @Override
   public void start() throws Exception {
@@ -21,7 +21,7 @@ public class ProcessmonVerticle extends AbstractVerticle {
     String pid = index > -1 ? name.substring(0, index) : UUID.randomUUID().toString();
     OperatingSystemMXBean systemMBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
     String publishAddress = context.config().getString("address");
-    id = vertx.setPeriodic(1000, id -> {
+    timer = vertx.setPeriodic(1000, id -> {
       JsonObject metrics = new JsonObject();
       metrics.put("pid", pid);
       metrics.put("cpu", systemMBean.getProcessCpuLoad());
@@ -32,6 +32,6 @@ public class ProcessmonVerticle extends AbstractVerticle {
 
   @Override
   public void stop() throws Exception {
-    vertx.cancelTimer(id);
+    vertx.cancelTimer(timer);
   }
 }

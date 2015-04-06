@@ -27,6 +27,8 @@ sourceSets {
 
 dependencies {
 	compile "io.vertx:vertx-core:3.0.0-milestone4"
+	testCompile "junit:junit:4.12"
+	testCompile "io.vertx:vertx-unit:3.0.0-milestone4"
 }
 
 run {

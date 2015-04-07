@@ -10,7 +10,6 @@ public class Main {
     Vertx vertx = Vertx.vertx();
     vertx.deployVerticle(
         new ProcessmonVerticle(),
-        new DeploymentOptions().setConfig(new JsonObject().put("address", "processmon")),
         deployment -> {
       if (deployment.succeeded()) {
         vertx.eventBus().<JsonObject>consumer("processmon", msg -> {

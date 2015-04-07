@@ -17,7 +17,7 @@ public class ProcessmonVerticle extends AbstractVerticle {
     int index = name.indexOf('@');
     String pid = index > -1 ? name.substring(0, index) : UUID.randomUUID().toString();
     OperatingSystemMXBean systemMBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-    String publishAddress = context.config().getString("address");
+    String publishAddress = context.config().getString("address", "processmon");
     timer = vertx.setPeriodic(1000, id -> {
       JsonObject metrics = new JsonObject();
       metrics.put("pid", pid);

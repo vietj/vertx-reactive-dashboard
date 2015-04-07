@@ -7,9 +7,6 @@ import io.vertx.core.json.JsonObject;
 import java.lang.management.ManagementFactory;
 import java.util.UUID;
 
-/**
- * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
- */
 public class ProcessmonVerticle extends AbstractVerticle {
 
   long timer;

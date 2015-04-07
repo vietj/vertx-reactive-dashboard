@@ -34,7 +34,7 @@
       }
     });
 
-    var charts = {};
+    charts = {};
     function getChart(metric) {
       var chart = charts[metric];
       if (chart == null) {
@@ -85,7 +85,6 @@
         var x = (new Date()).getTime(); // current time
 
         for (var id in dashboard) {
-          console.log(id);
           if (dashboard.hasOwnProperty(id)) {
             var metrics = dashboard[id];
             for (var metric in metrics) {
@@ -104,7 +103,7 @@
                     });
                   }
                   serie = chart.widget.addSeries({
-                    name: "whatever",
+                    name: id,
                     data: data
                   });
                   series[id] = serie;
@@ -115,10 +114,21 @@
           }
         }
 
-        // Remove absent metrics later
-        for (var key in charts) {
-          if (charts.hasOwnProperty(key)) {
-            charts[key].widget.redraw();
+        // Remove metrics
+        for (var i in charts) {
+          if (charts.hasOwnProperty(i)) {
+            var chart = charts[i];
+            var series = chart.series;
+            for (j in series) {
+              if (series.hasOwnProperty(j)) {
+                if (dashboard[j] === undefined) {
+                  console.log("Deleting serie " + j + " / " + i);
+                  series[j].remove();
+                  delete series[j];
+                }
+              }
+            }
+            charts[i].widget.redraw();
           }
         }
       });

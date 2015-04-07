@@ -22,6 +22,7 @@ vertx.eventBus().consumer("metrics") { msg ->
 };
 
 vertx.setPeriodic(1000) {
+  println dashboard
   vertx.eventBus().publish("dashboard", dashboard)
 }
 

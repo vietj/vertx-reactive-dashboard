@@ -15,12 +15,23 @@ publish a JSON object on the event bus:
 }
 ````
 
-The projects has a Main class to test the Verticle in the IDE and see the Verticle in action.
+The projects has a Main class to see the Verticle in action in the IDE or with the build:
 
-The verticle can be installed in a Maven repository with `mvn install` . It can be executed from the command line
-or deployed by another verticle:
+````
+mvn exec:java
+````
 
-````vertx run maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon -cluster
+or
+
+````
+gradle run
+````
+
+The verticle can be installed in a Maven repository with `mvn install` or with a Gradle script `gradle install`. It can
+be executed from the command line or deployed by another verticle:
+
+````
+vertx run maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon -cluster
 ````
 
 The _-cluster_ option will publish the events in a Vert.x cluster, the following JavaScript subscribes to the events
@@ -33,7 +44,7 @@ vertx.eventBus().consumer("processmon", function(msg) {
 });
 ````
 
-execute with `ertx run consume.js -cluster`
+execute with `vertx run consume.js -cluster`
 
 It can also be deployed in the same script locally:
 
@@ -41,13 +52,13 @@ It can also be deployed in the same script locally:
 vertx.deployVerticle("maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon");
 vertx.eventBus().consumer("processmon", function(msg) {
   var metrics = msg.body();
-  console.log(metrics.pid + " CPU:" + metrics.cpu + " MEM:" + metrics.mem);
+  console.log(metrics.pid + " -> CPU:" + metrics.cpu + " MEM:" + metrics.mem);
 });
 ````
 
 In this use case, the _-cluster_ option is not necessary anymore.
 
-# Monitor
+# Dashboard
 
 The dashboard is a client webapp getting dashboard events via the eventbus bridge with the JSON structure:
 
@@ -59,62 +70,36 @@ The dashboard is a client webapp getting dashboard events via the eventbus bridg
 }
 ````
 
+The processmon JSON format is to the dashboard JSON format.
+
 The script dashboard.js creates a simple version of the dashboard for the current process.
 
 ````
 vertx run dashboard.js
 ````
 
-#
+The script _dashboard.groovy_ is a dashboard webapp that aggregates the cluster dashboard events, those events
+are published by the _monitor.js_ script.
 
+In both case the client side is the same, the difference is the aggregation is the second case.
 
-# Demo
+# RxGroovy api
 
-Metrics aggregation to client
+The _dashboard.groovy_ has a commented part that shows the usage of the RxGroovy API for aggregating dashboard.
 
-# How to run it
+# Testing
 
-## Install the vertx-sigar Verticle
+The _processmon_ verticle has a JUnit test, showing the Vert.x Unit API, the tests can be run either with
+Maven or Gradle:
 
-This verticle uses the sigar lib to publish metrics event on the bus
+````
+mvn test
+````
 
-## Run one or several monitors
+or
 
-```
-export VERTX_OPTS="-Dvertx.metrics.options.enabled=true"
-vertx run monitor.js -cluster
-```
+````
+gradle test
+````
 
-or if you have multicast issues (because of VPN like me)
-
-```
-export VERTX_OPTS="-Dvertx.metrics.options.enabled=true"
-vertx run monitor.js -cluster -cluster-host 192.168.0.106
-```
-
-This script publish an aggregation of the Sigar metrics + Vert.x metrics on the event bus to the `metrics` address
-
-## Run the dashboard server
-
-```
-vertx run dashboard.groovy -cluster
-```
-
-or...
-
-```
-vertx run dashboard.groovy -cluster -cluster-host 192.168.0.106
-```
-
-It subscribes to the `metrics` address and aggregates the metrics in a dashboard sent to the client via
-the event bus bridge. The client gets the metrics with a nice dynamic dashboard.
-
-## Fatjaring monitor.js
-
-The _service_ Maven project creates a fatjar wrapping `monitor.js` and its dependencies, run it with:
-
-```
-java -Dvertx.metrics.options.enabled=true -jar target/my-service-1.0-SNAPSHOT-fatjar.jar
-```
-
-Note: it cannot be run with custom cluster configuration at the moment
+The _test.js_ script is a JavaScript unit test still using Vert.x Unit but using the polyglot API.

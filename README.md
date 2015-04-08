@@ -1,4 +1,4 @@
-# Reactboard
+# Reactmon
 
 This demo shows how Vert.x can be used to create a monitoring Dashboard using Vert.x and reactive concepts.
 

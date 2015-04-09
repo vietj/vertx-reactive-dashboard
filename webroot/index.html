@@ -34,46 +34,64 @@
       }
     });
 
+    var Chart = function(metric) {
+      $("body").append('<div id="' + metric + '" style="height: 150px; min-width: 310px"></div>');
+      var obj = {
+        widget: new Highcharts.Chart({
+          chart: {
+            renderTo: metric,
+            type: 'spline',
+            animation: Highcharts.svg, // don't animate in old IE
+            marginRight: 10
+          },
+          title: {
+            text: metric
+          },
+          xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150
+          },
+          yAxis: {
+            title: {
+              text: 'Value'
+            },
+            plotLines: [{
+              value: 0,
+              width: 1,
+              color: '#808080'
+            }]
+          },
+          legend: {
+            enabled: false
+          },
+          exporting: {
+            enabled: false
+          },
+          series: []
+        }),
+        series: {},
+
+        getSerie : function(id, init) {
+          var serie = this.series[id];
+          if (serie == null) {
+            var data = init();
+            serie = this.widget.addSeries({
+              name: id,
+              data: data
+            });
+            this.series[id] = serie;
+          }
+          return serie;
+        }
+      };
+      return obj;
+    };
+
     charts = {};
     function getChart(metric) {
       var chart = charts[metric];
       if (chart == null) {
-        $("body").append('<div id="' + metric + '" style="height: 150px; min-width: 310px"></div>');
-        chart = {
-          widget: new Highcharts.Chart({
-            chart: {
-              renderTo: metric,
-              type: 'spline',
-              animation: Highcharts.svg, // don't animate in old IE
-              marginRight: 10
-            },
-            title: {
-              text: metric
-            },
-            xAxis: {
-              type: 'datetime',
-              tickPixelInterval: 150
-            },
-            yAxis: {
-              title: {
-                text: 'Value'
-              },
-              plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-              }]
-            },
-            legend: {
-              enabled: false
-            },
-            exporting: {
-              enabled: false
-            },
-            series: []
-          }),
-          series: {}
-        };
+        chart = new Chart(metric);
         charts[metric] = chart;
       }
       return chart;
@@ -90,11 +108,8 @@
             for (var metric in metrics) {
               if (metrics.hasOwnProperty(metric)) {
                 var chart = getChart(metric);
-                var series = chart.series;
-                var serie = series[id];
                 var y = metrics[metric];
-                if (serie == null) {
-                  console.log("creating serie " + id);
+                var serie = chart.getSerie(id, function() {
                   var data = [], time = (new Date()).getTime(),i ;
                   for (i = -19; i <= 0; i += 1) {
                     data.push({
@@ -102,12 +117,8 @@
                       y: y
                     });
                   }
-                  serie = chart.widget.addSeries({
-                    name: id,
-                    data: data
-                  });
-                  series[id] = serie;
-                }
+                  return data;
+                });
                 serie.addPoint([x, y], false, true);
               }
             }

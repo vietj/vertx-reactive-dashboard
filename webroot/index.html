@@ -82,6 +82,18 @@
             this.series[id] = serie;
           }
           return serie;
+        },
+
+        removeSeries: function(filter) {
+          for (j in this.series) {
+            if (this.series.hasOwnProperty(j)) {
+              if (filter(j)) {
+                console.log("Deleting serie " + j);
+                this.series[j].remove();
+                delete this.series[j];
+              }
+            }
+          }
         }
       };
       return obj;
@@ -129,16 +141,15 @@
         for (var i in charts) {
           if (charts.hasOwnProperty(i)) {
             var chart = charts[i];
-            var series = chart.series;
-            for (j in series) {
-              if (series.hasOwnProperty(j)) {
-                if (dashboard[j] === undefined) {
-                  console.log("Deleting serie " + j + " / " + i);
-                  series[j].remove();
-                  delete series[j];
-                }
+            chart.removeSeries(function(id) {
+              if (dashboard[id] === undefined) {
+                console.log("Deleting serie " + id + " / " + i);
+                return true;
               }
-            }
+              return false;
+            });
+
+            // Redraw
             charts[i].widget.redraw();
           }
         }

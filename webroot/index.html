@@ -94,6 +94,10 @@
               }
             }
           }
+        },
+
+        redraw: function() {
+          this.widget.redraw();
         }
       };
       return obj;
@@ -150,7 +154,7 @@
             });
 
             // Redraw
-            charts[i].widget.redraw();
+            charts[i].redraw();
           }
         }
       });

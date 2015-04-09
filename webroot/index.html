@@ -103,15 +103,35 @@
       };
     };
 
-    charts = {};
-    function getChart(metric) {
-      var chart = charts[metric];
-      if (chart == null) {
-        chart = new Chart(metric);
-        charts[metric] = chart;
-      }
-      return chart;
-    }
+    var Charts = function() {
+      var charts = {};
+      return {
+        getChart: function(metric) {
+          var chart = charts[metric];
+          if (chart == null) {
+            chart = new Chart(metric);
+            charts[metric] = chart;
+          }
+          return chart;
+        },
+        redraw: function() {
+          for (var i in charts) {
+            if (charts.hasOwnProperty(i)) {
+              charts[i].redraw();
+            }
+          }
+        },
+        removeSeries: function(filter) {
+          for (var i in charts) {
+            if (charts.hasOwnProperty(i)) {
+              var chart = charts[i];
+              chart.removeSeries(filter);
+            }
+          }
+        }
+      };
+    };
+    var charts = new Charts();
 
     var eb = new vertx.EventBus("http://localhost:8080/eventbus");
     eb.onopen = function() {
@@ -123,7 +143,7 @@
             var metrics = dashboard[id];
             for (var metric in metrics) {
               if (metrics.hasOwnProperty(metric)) {
-                var chart = getChart(metric);
+                var chart = charts.getChart(metric);
                 var y = metrics[metric];
                 var serie = chart.getSerie(id, function() {
                   var data = [], time = (new Date()).getTime(),i ;
@@ -142,21 +162,15 @@
         }
 
         // Remove metrics
-        for (var i in charts) {
-          if (charts.hasOwnProperty(i)) {
-            var chart = charts[i];
-            chart.removeSeries(function(id) {
-              if (dashboard[id] === undefined) {
-                console.log("Deleting serie " + id + " / " + i);
-                return true;
-              }
-              return false;
-            });
-
-            // Redraw
-            charts[i].redraw();
+        charts.removeSeries(function(id) {
+          if (dashboard[id] === undefined) {
+            return true;
           }
-        }
+          return false;
+        });
+
+        //
+        charts.redraw();
       });
     };
 

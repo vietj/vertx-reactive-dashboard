@@ -1,4 +1,4 @@
-# Reactmon
+# Reactive monitoring dashboard
 
 This demo shows how Vert.x can be used to create a monitoring Dashboard using Vert.x and reactive concepts.
 
@@ -7,7 +7,7 @@ This demo shows how Vert.x can be used to create a monitoring Dashboard using Ve
 The _processmon_ folder contains a simple Verticle that measures a couple of simple metrics of the JVM process and
 publish a JSON object on the event bus:
 
-```
+````
 {
    pid : 1234, // The process id
    cpu: 0.4,   // The measured CPU load
@@ -103,3 +103,7 @@ gradle test
 ````
 
 The _test.js_ script is a JavaScript unit test still using Vert.x Unit but using the polyglot API.
+
+# Todo
+
+use react.js in the dashboard

@@ -12,17 +12,17 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-lang-js</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.0-milestone5</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-hazelcast</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.0-milestone5</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-maven-service-factory</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.0-milestone5</version>
     </dependency>
   </dependencies>
 

@@ -104,6 +104,13 @@ gradle test
 
 The _test.js_ script is a JavaScript unit test still using Vert.x Unit but using the polyglot API.
 
+# Running with docker
+
+```
+docker run -t-p 8080:8080 -i --rm -v ~/.m2:/root/.m2 -v $PWD:/root -w /root vertx/vertx3-executable run dashboard.js
+```
+
+
 # Todo
 
 use react.js in the dashboard

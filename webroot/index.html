@@ -31,7 +31,7 @@
 
     var charts = new Charts();
 
-    var eb = new vertx.EventBus("http://localhost:8080/eventbus");
+    var eb = new vertx.EventBus("http://" + location.host + "/eventbus");
     eb.onopen = function() {
       eb.registerHandler("dashboard", function(dashboard) {
         var x = (new Date()).getTime(); // current time

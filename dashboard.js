@@ -1,6 +1,6 @@
-var Router = require("vertx-apex-js/router");
-var SockJSHandler = require("vertx-apex-js/sock_js_handler");
-var StaticHandler = require("vertx-apex-js/static_handler");
+var Router = require("vertx-web-js/router");
+var SockJSHandler = require("vertx-web-js/sock_js_handler");
+var StaticHandler = require("vertx-web-js/static_handler");
 
 var router = Router.router(vertx);
 

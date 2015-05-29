@@ -1,6 +1,6 @@
-import io.vertx.groovy.ext.apex.Router;
-import io.vertx.groovy.ext.apex.handler.sockjs.SockJSHandler;
-import io.vertx.groovy.ext.apex.handler.StaticHandler;
+import io.vertx.groovy.ext.web.Router;
+import io.vertx.groovy.ext.web.handler.sockjs.SockJSHandler;
+import io.vertx.groovy.ext.web.handler.StaticHandler;
 import java.util.concurrent.TimeUnit;
 
 def router = Router.router(vertx)
@@ -9,7 +9,7 @@ router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge([
 outboundPermitteds: [[address: "dashboard"]]]))
 
 // Serve the static resources
-router.route().handler(StaticHandler.create())
+router.route().handler(StaticHandler.create().setCachingEnabled(false))
 
 def httpServer = vertx.createHttpServer()
 httpServer.requestHandler(router.&accept).listen(8080)

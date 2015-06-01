@@ -1,21 +1,5 @@
 /*
- * Copyright 2014 Red Hat, Inc.
- *
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  and Apache License v2.0 which accompanies this distribution.
- *
- *  The Eclipse Public License is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- *
- *  The Apache License v2.0 is available at
- *  http://www.opensource.org/licenses/apache2.0.php
- *
- *  You may elect to redistribute this code under either of these licenses.
- */
-
-/*
- *   Copyright (c) 2011-2013 The original author or authors
+ *   Copyright (c) 2011-2015 The original author or authors
  *   ------------------------------------------------------
  *   All rights reserved. This program and the accompanying materials
  *   are made available under the terms of the Eclipse Public License v1.0
@@ -62,14 +46,15 @@ var vertx = vertx || {};
   
     that.onopen = null;
     that.onclose = null;
+    that.onerror = null;
 
-    that.send = function(address, message, replyHandler) {
-      sendOrPub("send", address, message, replyHandler)
-    }
+    that.send = function(address, message, replyHandler, failureHandler) {
+      sendOrPub("send", address, message, replyHandler, failureHandler)
+    };
   
     that.publish = function(address, message) {
       sendOrPub("publish", address, message, null)
-    }
+    };
   
     that.registerHandler = function(address, handler) {
       checkSpecified("address", 'string', address);
@@ -86,7 +71,7 @@ var vertx = vertx || {};
       } else {
         handlers[handlers.length] = handler;
       }
-    }
+    };
   
     that.unregisterHandler = function(address, handler) {
       checkSpecified("address", 'string', address);
@@ -105,17 +90,17 @@ var vertx = vertx || {};
           delete handlerMap[address];
         }
       }
-    }
+    };
   
     that.close = function() {
       checkOpen();
       state = vertx.EventBus.CLOSING;
       sockJSConn.close();
-    }
+    };
   
     that.readyState = function() {
       return state;
-    }
+    };
   
     sockJSConn.onopen = function() {
       // Send the first ping then send a ping every pingInterval milliseconds
@@ -140,7 +125,11 @@ var vertx = vertx || {};
       var json = JSON.parse(msg);
       var type = json.type;
       if (type === 'err') {
-        console.error("Error received on connection: " + json.body);
+        if (that.onerror) {
+          that.onerror(json.body);
+        } else {
+          console.error("Error received on connection: " + json.body);
+        }
         return;
       }
       var body = json.body;
@@ -163,32 +152,43 @@ var vertx = vertx || {};
         }
       } else {
         // Might be a reply message
-        var handler = replyHandlers[address];
-        if (handler) {
+        handlers = replyHandlers[address];
+        if (handlers) {
           delete replyHandlers[address];
-          handler(body, replyHandler);
+          var handler = handlers.replyHandler;
+          if (body) {
+            handler(body, replyHandler);
+          } else if (typeof json.failureCode != 'undefined') {
+            // Check for failure
+            var failure = { failureCode: json.failureCode, failureType: json.failureType, message: json.message };
+            var failureHandler = handlers.failureHandler;
+            if (failureHandler) {
+              failureHandler(failure)
+            }
+          }
         }
       }
-    }
+    };
 
     function sendPing() {
       var msg = {
         type: "ping"
-      }
+      };
       sockJSConn.send(JSON.stringify(msg));
     }
   
-    function sendOrPub(sendOrPub, address, message, replyHandler) {
+    function sendOrPub(sendOrPub, address, message, replyHandler, failureHandler) {
       checkSpecified("address", 'string', address);
       checkSpecified("replyHandler", 'function', replyHandler, true);
+      checkSpecified("failureHandler", 'function', failureHandler, true);
       checkOpen();
       var envelope = { type : sendOrPub,
                        address: address,
                        body: message };
-      if (replyHandler) {
+      if (replyHandler || failureHandler) {
         var replyAddress = makeUUID();
         envelope.replyAddress = replyAddress;
-        replyHandlers[replyAddress] = replyHandler;
+        replyHandlers[replyAddress] = { replyHandler: replyHandler, failureHandler: failureHandler };
       }
       var str = JSON.stringify(envelope);
       sockJSConn.send(str);
@@ -216,7 +216,7 @@ var vertx = vertx || {};
     function makeUUID(){return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
         .replace(/[xy]/g,function(a,b){return b=Math.random()*16,(a=="y"?b&3|8:b|0).toString(16)})}
   
-  }
+  };
   
   vertx.EventBus.CONNECTING = 0;
   vertx.EventBus.OPEN = 1;

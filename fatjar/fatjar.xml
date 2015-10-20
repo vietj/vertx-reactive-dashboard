@@ -21,7 +21,7 @@
   </dependencySets>
   <files>
     <file>
-      <source>../monitor.js</source>
+      <source>monitor.js</source>
     </file>
   </files>
 </assembly>

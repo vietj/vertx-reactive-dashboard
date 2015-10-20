@@ -31,7 +31,7 @@ The verticle can be installed in a Maven repository with `mvn install` or with a
 be executed from the command line or deployed by another verticle:
 
 ````
-vertx run maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon -cluster
+vertx run maven:io.vertx:processmon:1.0-SNAPSHOT -cluster
 ````
 
 The _-cluster_ option will publish the events in a Vert.x cluster, the following JavaScript subscribes to the events
@@ -44,7 +44,7 @@ vertx.eventBus().consumer("processmon", function(msg) {
 });
 ````
 
-execute with `vertx run consume.js -cluster`
+execute with `vertx run consumer.js -cluster`
 
 It can also be deployed in the same script locally:
 
@@ -102,14 +102,12 @@ or
 gradle test
 ````
 
-The _test.js_ script is a JavaScript unit test still using Vert.x Unit but using the polyglot API.
+The _test.js_ script is a JavaScript unit test still using Vert.x Unit but using the polyglot API, it can be executed
+directly from the CLI:
 
-# Running with docker
-
-```
-docker run -t-p 8080:8080 -i --rm -v ~/.m2:/root/.m2 -v $PWD:/root -w /root vertx/vertx3-executable run dashboard.js
-```
-
+````
+vertx test tests.js
+````
 
 # Todo
 

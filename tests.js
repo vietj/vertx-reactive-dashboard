@@ -3,7 +3,14 @@ var TestSuite = require('vertx-unit-js/test_suite');
 var suite = TestSuite.create("the_suite");
 
 suite.before(function(context) {
-  vertx.deployVerticle("maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon");
+  var async = context.async();
+  vertx.deployVerticle("maven:io.vertx:processmon:1.0-SNAPSHOT", function(id,err) {
+    if (id != null) {
+      async.complete();
+    } else {
+      context.fail(err);
+    }
+  });
 });
 
 suite.test("the_test", function (context) {
@@ -19,4 +26,4 @@ suite.test("the_test", function (context) {
   });
 });
 
-suite.run(vertx, {reporters: [{to: "console"}]});
+suite.run(vertx);

@@ -1,4 +1,4 @@
-$vertx.deploy_verticle 'maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon'
+$vertx.deploy_verticle 'maven:io.vertx:processmon:1.0-SNAPSHOT'
 
 $vertx.event_bus.local_consumer 'processmon' do |msg|
   process = msg.body

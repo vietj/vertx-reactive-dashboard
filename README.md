@@ -87,6 +87,22 @@ In both case the client side is the same, the difference is the aggregation is t
 
 The _dashboard.groovy_ has a commented part that shows the usage of the RxGroovy API for aggregating dashboard.
 
+# HA
+
+The dashboard monitoring can be executed HA to show failover of the dashboard:
+
+````
+vertx run dashboard.groovy -cluster -ha
+````
+
+and
+
+````
+vertx -ha
+````
+
+then kill first node
+
 # Testing
 
 The _processmon_ verticle has a JUnit test, showing the Vert.x Unit API, the tests can be run either with
@@ -111,4 +127,5 @@ vertx test tests.js
 
 # Todo
 
-use react.js in the dashboard
+- Add authorization
+- Add shell command

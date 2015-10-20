@@ -125,7 +125,48 @@ directly from the CLI:
 vertx test tests.js
 ````
 
+# Shell
+
+The ProcessmonVerticle can be extended with a custom shell command.
+
+1/ in `pom.xml` add the dependency:
+
+````
+<dependency>
+  <groupId>io.vertx</groupId>
+  <artifactId>vertx-shell</artifactId>
+  <version>3.1.0</version>
+</dependency>
+````
+
+2/ in `start()` method add:
+
+````
+Command cmd = CommandBuilder.command(CLI.create("processmon").addArgument(new Argument().setIndex(0).setArgName("period"))).
+    processHandler(process -> {
+      period = Integer.parseInt(process.commandLine().getArgumentValue(0));
+      run();
+      process.end();
+    }).
+    build();
+CommandRegistry.get(vertx).registerCommand(cmd);
+````
+
+3/ finally start the ShellService, for instance in the `Main` class add:
+
+````
+ShellService service = ShellService.create(vertx, new ShellServiceOptions().setTelnetOptions(new TelnetOptions().setPort(5000)));
+service.start(ar -> {
+  if (ar.succeeded()) {
+    System.out.println("Shell started");
+  } else {
+    ar.cause().printStackTrace();
+  }
+});
+````
+
+this is convenient because the service is already on the class path and the `ShellService` is available.
+
 # Todo
 
 - Add authorization
-- Add shell command

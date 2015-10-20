@@ -152,6 +152,8 @@ Command cmd = CommandBuilder.command(CLI.create("processmon").addArgument(new Ar
 CommandRegistry.get(vertx).registerCommand(cmd);
 ````
 
+Note the command will be process on the Verticle event loop.
+
 3/ finally start the ShellService, for instance in the `Main` class add:
 
 ````

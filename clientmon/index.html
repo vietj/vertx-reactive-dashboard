@@ -1,0 +1,25 @@
+<html>
+
+<script language="javascript" type="text/javascript">
+  var wsUri = "ws://localhost:8080/";
+  var websocket = new WebSocket(wsUri);
+  websocket.onopen = function(evt) {
+    console.log("opened");
+  };
+  websocket.onmessage = function(evt) {
+    var pre = document.createElement("p");
+    pre.style.wordWrap = "break-word";
+    pre.innerHTML = evt.data;
+    var metrics = document.getElementById("metrics");
+    metrics.appendChild(pre);
+  };
+</script>
+
+<body>
+
+  <h1>Client monitoring</h1>
+
+  <div id="metrics"></div>
+
+</body>
+</html>

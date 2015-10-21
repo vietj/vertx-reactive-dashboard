@@ -16,14 +16,14 @@ router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options).
 router.route().handler(StaticHandler.create().handle);
 vertx.createHttpServer().requestHandler(router.accept).listen(8080);
 
-vertx.deployVerticle("maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon");
+vertx.deployVerticle("maven:io.vertx:collector:1.0-SNAPSHOT");
 
-vertx.eventBus().localConsumer("processmon", function(msg) {
-  var process = msg.body();
+vertx.eventBus().localConsumer("metrics", function(msg) {
+  var metrics = msg.body();
   var dashboard = {};
-  dashboard[process.pid] = {
-    CPU: process.cpu,
-    Mem: process.mem
+  dashboard[metrics.pid] = {
+    CPU: metrics.cpu,
+    Mem: metrics.mem
   };
   vertx.eventBus().publish("dashboard", dashboard);
 });

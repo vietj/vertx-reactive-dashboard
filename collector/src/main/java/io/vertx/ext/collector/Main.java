@@ -1,6 +1,5 @@
-package io.vertx.ext.processmon;
+package io.vertx.ext.collector;
 
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
@@ -9,10 +8,10 @@ public class Main {
   public static void main(String[] args) {
     Vertx vertx = Vertx.vertx();
     vertx.deployVerticle(
-        new ProcessmonVerticle(),
+        new CollectorVerticle(),
         deployment -> {
       if (deployment.succeeded()) {
-        vertx.eventBus().<JsonObject>consumer("processmon", msg -> {
+        vertx.eventBus().<JsonObject>consumer("metrics", msg -> {
           System.out.println(msg.body());
         });
       } else {

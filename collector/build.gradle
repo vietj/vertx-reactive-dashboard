@@ -35,4 +35,4 @@ run {
 	classpath += configurations.provided
 }
 
-mainClassName = "io.vertx.ext.processmon.Main"
+mainClassName = "io.vertx.ext.collector.Main"

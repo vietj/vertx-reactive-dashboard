@@ -1,4 +1,4 @@
-package io.vertx.ext.processmon;
+package io.vertx.ext.collector;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
-public class ProcessmonTest {
+public class CollectorTest {
 
   Vertx vertx;
 
@@ -21,7 +21,7 @@ public class ProcessmonTest {
   public void setUp() {
     vertx = Vertx.vertx();
     vertx.deployVerticle(
-        new ProcessmonVerticle(),
+        new CollectorVerticle(),
         new DeploymentOptions().setConfig(new JsonObject().put("address", "processmon"))
     );
   }

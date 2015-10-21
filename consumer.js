@@ -1,4 +1,4 @@
-vertx.eventBus().consumer("processmon", function(msg) {
-  var body = msg.body();
-  console.log(JSON.stringify(body));
+vertx.eventBus().consumer("metrics", function(msg) {
+  var metrics = msg.body();
+  console.log(JSON.stringify(metrics));
 });

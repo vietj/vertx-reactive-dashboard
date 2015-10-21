@@ -1,0 +1,9 @@
+{
+  "main": "io.vertx.ext.collector.CollectorVerticle",
+  "options": {
+    "worker": false,
+    "config": {
+      "address": "metrics"
+    }
+  }
+}

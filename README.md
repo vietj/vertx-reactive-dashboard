@@ -2,9 +2,9 @@
 
 This demo shows how Vert.x can be used to create a monitoring Dashboard using Vert.x and reactive concepts.
 
-# Process monitoring
+# Metrics collection
 
-The _processmon_ folder contains a simple Verticle that measures a couple of simple metrics of the JVM process and
+The `collector` folder contains a simple Verticle that measures a couple of simple metrics of the JVM process and
 publish a JSON object on the event bus:
 
 ````
@@ -31,14 +31,14 @@ The verticle can be installed in a Maven repository with `mvn install` or with a
 be executed from the command line or deployed by another verticle:
 
 ````
-vertx run maven:io.vertx:processmon:1.0-SNAPSHOT -cluster
+vertx run maven:io.vertx:collector:1.0-SNAPSHOT -cluster
 ````
 
 The _-cluster_ option will publish the events in a Vert.x cluster, the following JavaScript subscribes to the events
 and print them on the console:
 
-```
-vertx.eventBus().consumer("processmon", function(msg) {
+````
+vertx.eventBus().consumer("metrics", function(msg) {
   var metrics = msg.body();
   console.log(metrics.pid + " CPU:" + metrics.cpu + " MEM:" + metrics.mem);
 });
@@ -48,15 +48,15 @@ execute with `vertx run consumer.js -cluster`
 
 It can also be deployed in the same script locally:
 
-```
-vertx.deployVerticle("maven:io.vertx:processmon:1.0-SNAPSHOT::io.vertx.processmon");
-vertx.eventBus().consumer("processmon", function(msg) {
-  var metrics = msg.body();
-  console.log(metrics.pid + " -> CPU:" + metrics.cpu + " MEM:" + metrics.mem);
-});
+````
+$vertx.deploy_verticle 'maven:io.vertx:collector:1.0-SNAPSHOT'
+$vertx.event_bus.local_consumer 'metrics' do |msg|
+  metrics = msg.body
+  puts "#{metrics}"
+end
 ````
 
-In this use case, the _-cluster_ option is not necessary anymore.
+In this use case, the _-cluster_ option is not needed.
 
 # Dashboard
 
@@ -70,18 +70,24 @@ The dashboard is a client webapp getting dashboard events via the eventbus bridg
 }
 ````
 
-The processmon JSON format is to the dashboard JSON format.
+Start first the `dashboard.js`, it deploys the collector verticle that setup the event bus bridge to forward
+the metrics events to the webapp.
 
-The script dashboard.js creates a simple version of the dashboard for the current process.
+Then, the script _dashboard.groovy_ is the same webapp that aggregates the cluster metrics events, those events
+are published by the collector verticle, collectors must be run separately, the dashboard collects all metrics
+via the distributed event bus:
+
+Start one or several collectors:
 
 ````
-vertx run dashboard.js
+vertx run maven:io.vertx:collector:1.0-SNAPSHOT -cluster
 ````
 
-The script _dashboard.groovy_ is a dashboard webapp that aggregates the cluster dashboard events, those events
-are published by the _monitor.js_ script.
+Then start the dashboard:
 
-In both case the client side is the same, the difference is the aggregation is the second case.
+````
+vertx run dashboard.groovy -cluster
+````
 
 # RxGroovy api
 
@@ -142,7 +148,7 @@ The ProcessmonVerticle can be extended with a custom shell command.
 2/ in `start()` method add:
 
 ````
-Command cmd = CommandBuilder.command(CLI.create("processmon").addArgument(new Argument().setIndex(0).setArgName("period"))).
+Command cmd = CommandBuilder.command(CLI.create("collector").addArgument(new Argument().setIndex(0).setArgName("period"))).
     processHandler(process -> {
       period = Integer.parseInt(process.commandLine().getArgumentValue(0));
       run();

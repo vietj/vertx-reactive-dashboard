@@ -1,4 +1,4 @@
-package io.vertx.ext.processmon;
+package io.vertx.ext.collector;
 
 import com.sun.management.OperatingSystemMXBean;
 import io.vertx.core.AbstractVerticle;
@@ -7,7 +7,7 @@ import io.vertx.core.json.JsonObject;
 import java.lang.management.ManagementFactory;
 import java.util.UUID;
 
-public class ProcessmonVerticle extends AbstractVerticle {
+public class CollectorVerticle extends AbstractVerticle {
 
   long timerId;
 
@@ -23,7 +23,7 @@ public class ProcessmonVerticle extends AbstractVerticle {
     int index = name.indexOf('@');
     pid = index > -1 ? name.substring(0, index) : UUID.randomUUID().toString();
     systemMBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-    publishAddress = context.config().getString("address", "processmon");
+    publishAddress = context.config().getString("address", "metrics");
     period = config().getInteger("period", 1000);
 
     // Start monitoring

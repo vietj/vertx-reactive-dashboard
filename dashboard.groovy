@@ -14,11 +14,15 @@ router.route().handler(StaticHandler.create().setCachingEnabled(false))
 def httpServer = vertx.createHttpServer()
 httpServer.requestHandler(router.&accept).listen(8080)
 
+// 
 def dashboard = [:]
-    
+
 vertx.eventBus().consumer("metrics") { msg ->
   def metrics = msg.body();
-  dashboard << metrics;
+  dashboard[metrics.pid] = [
+      CPU:metrics.cpu,
+      Mem:metrics.mem
+  ];
 };
 
 vertx.setPeriodic(1000) {
@@ -30,6 +34,10 @@ vertx.setPeriodic(1000) {
 // RxGroovy version
 def observable = vertx.eventBus().consumer("metrics").bodyStream().toObservable();
 observable.
+    map({ metrics  -> ['metrics.pid':[
+        CPU: metrics.cpu,
+        Mem: metrics.mem
+    ]]}).
     buffer(1, TimeUnit.SECONDS).
     map({ dashboard -> dashboard.inject([:]) { result, i -> result << i }
     }).

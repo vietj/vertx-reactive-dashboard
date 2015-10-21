@@ -11,9 +11,9 @@ public class ClientMon {
 
   public static void main(String[] args) {
     Vertx vertx = Vertx.vertx();
-    vertx.deployVerticle("maven:io.vertx:processmon:1.0-SNAPSHOT");
+    vertx.deployVerticle("maven:io.vertx:collector:1.0-SNAPSHOT");
     JsonObject obj = new JsonObject();
-    vertx.eventBus().<JsonObject>consumer("processmon", msg -> {
+    vertx.eventBus().<JsonObject>consumer("metrics", msg -> {
       obj.mergeIn(msg.body());
     });
     HttpServer server = vertx.createHttpServer();

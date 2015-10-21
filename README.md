@@ -169,6 +169,13 @@ service.start(ar -> {
 
 this is convenient because the service is already on the class path and the `ShellService` is available.
 
-# Todo
 
-- Add authorization
+# Authentication
+
+1/ put `user.admin = password` in `auth.properties` and configure the auth handler:
+
+````
+def authProvider = io.vertx.groovy.ext.auth.shiro.ShiroAuth.create(vertx, io.vertx.ext.auth.shiro.ShiroAuthRealmType.PROPERTIES, [properties_path:'auth.properties'])
+def basicAuthHandler = io.vertx.groovy.ext.web.handler.BasicAuthHandler.create(authProvider)
+router.route("/*").handler(basicAuthHandler);
+````

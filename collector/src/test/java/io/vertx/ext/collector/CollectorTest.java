@@ -1,6 +1,5 @@
 package io.vertx.ext.collector;
 
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
@@ -21,15 +20,14 @@ public class CollectorTest {
   public void setUp() {
     vertx = Vertx.vertx();
     vertx.deployVerticle(
-        new CollectorVerticle(),
-        new DeploymentOptions().setConfig(new JsonObject().put("address", "processmon"))
+        new CollectorVerticle()
     );
   }
 
   @Test
   public void theTest(TestContext context) {
     Async async = context.async();
-    MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("processmon");
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("metrics");
     consumer.handler(msg -> {
       JsonObject metrics = msg.body();
       context.assertNotNull(metrics.getValue("pid"));

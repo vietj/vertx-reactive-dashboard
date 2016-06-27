@@ -12,9 +12,9 @@ public class ClientMon {
   public static void main(String[] args) {
     Vertx vertx = Vertx.vertx();
     vertx.deployVerticle("maven:io.vertx:collector:1.0-SNAPSHOT");
-    JsonObject obj = new JsonObject();
+    JsonObject metrics = new JsonObject();
     vertx.eventBus().<JsonObject>consumer("metrics", msg -> {
-      obj.mergeIn(msg.body());
+      metrics.mergeIn(msg.body());
     });
     HttpServer server = vertx.createHttpServer();
 
@@ -24,7 +24,7 @@ public class ClientMon {
 
     server.websocketHandler(ws -> {
       long id = vertx.setPeriodic(1000, v -> {
-        ws.writeFinalTextFrame(obj.encode());
+        ws.writeFinalTextFrame(metrics.encode());
       });
       ws.closeHandler(v -> {
         vertx.cancelTimer(id);
